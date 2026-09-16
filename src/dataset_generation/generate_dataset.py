@@ -150,8 +150,17 @@ def build_dataset(n=5000, seed=42, verbose=True):
 
 
 # Columnas que verá el modelo de ML (NO incluyen las salidas del framework)
+#
+# Nota sobre T_res_F: la temperatura se excluye deliberadamente del conjunto
+# de entrenamiento. La viscosidad del agua se deriva de ella mediante una
+# función determinista, por lo que ambas variables presentan una correlación
+# de -0.999: entregar las dos duplicaría la misma información y repartiría de
+# forma arbitraria la importancia entre ellas, distorsionando la
+# interpretabilidad del modelo. Se conserva muw_cp, que es la variable que
+# interviene directamente en la física del desplazamiento. La temperatura
+# permanece en el archivo para trazabilidad.
 FEATURE_COLUMNS = (
-    list(INPUT_VARIABLES.keys())
+    [c for c in INPUT_VARIABLES.keys() if c != "T_res_F"]
     + list(RELPERM_VARIABLES.keys())
     + ["muo_cp", "muw_cp", "So_current"]
 )

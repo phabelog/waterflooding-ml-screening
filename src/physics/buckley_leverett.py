@@ -164,3 +164,56 @@ def welge_results(params, Swi, Sor):
         "recovery_curve": {"Qi": Qi_array, "RF": RF_array, "Sw2": Sw2_array},
         "fw_curve": {"Sw": shock["Sw_grid"], "fw": shock["fw_grid"]},
     }
+
+
+def displacement_efficiency_at_fw(params, Swi, Sor, fw_limit=0.96):
+    """
+    Eficiencia de desplazamiento ED en la zona barrida, evaluada cuando el
+    corte de agua producido alcanza el límite económico fw_limit.
+
+    Se ubica la saturación Sw2 en la cara productora donde fw(Sw2) = fw_limit
+    y se aplica la construcción de Welge para obtener la saturación promedio
+    detrás del frente:
+
+        Sw_avg = Sw2 + (1 - fw2) / (dfw/dSw)|_Sw2
+        ED     = (Sw_avg - Swi) / (1 - Swi)
+
+    Si la irrupción ocurre a un corte de agua mayor que fw_limit (frente muy
+    favorable), se devuelve el valor a la irrupción, que es el mínimo físico
+    alcanzable en ese escenario.
+
+    Parameters
+    ----------
+    fw_limit : float
+        Corte de agua económico (fracción). 0.96 equivale a WOR = 24.
+
+    Returns
+    -------
+    ED : float
+        Eficiencia de desplazamiento, en [0, 1].
+    """
+    res = welge_results(params, Swi, Sor)
+
+    if fw_limit <= res["fwf"]:
+        return float(np.clip(res["RF_BT"], 0.0, 1.0))
+
+    # Localizar Sw2 tal que fw(Sw2) = fw_limit, después del frente
+    Sw_lo, Sw_hi = res["Swf"], 1 - Sor - 1e-7
+
+    def gap(Sw):
+        return float(_fw_of_Sw(Sw, params)) - fw_limit
+
+    if gap(Sw_hi) < 0:            # nunca alcanza el corte límite
+        Sw2 = Sw_hi
+    else:
+        Sw2 = brentq(gap, Sw_lo, Sw_hi, xtol=1e-9)
+
+    h = 1e-5
+    fw2 = float(_fw_of_Sw(Sw2, params))
+    dfw = (float(_fw_of_Sw(min(Sw2 + h, 1 - Sor - 1e-7), params))
+           - float(_fw_of_Sw(max(Sw2 - h, Swi + 1e-7), params))) / (2 * h)
+    dfw = max(dfw, 1e-8)
+
+    Sw_avg = Sw2 + (1.0 - fw2) / dfw
+    ED = (Sw_avg - Swi) / (1.0 - Swi)
+    return float(np.clip(ED, 0.0, 1.0))

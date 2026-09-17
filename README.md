@@ -121,11 +121,28 @@ publicaciones involuntarias.
 Los resultados de las Etapas 2 a 4 se obtienen sobre el dataset sintético y
 no dependen de estos datos; la validación externa corresponde a la Etapa 5.
 
-## Citación
+## Citación y uso
 
-*(Pendiente — se completará al momento de la publicación del artículo, con el
-DOI de Zenodo del release correspondiente al código y los datos empleados en
-el manuscrito.)*
+Este repositorio acompaña a un artículo científico en desarrollo. El método,
+el framework físico y el criterio de cribado aquí implementados son obra de
+los autores indicados.
+
+Si utiliza este software, el conjunto de datos o el método que implementan
+—total o parcialmente, o en una reimplementación propia— por favor cite el
+trabajo. GitHub genera la referencia automáticamente a partir del archivo
+`CITATION.cff` mediante el botón **"Cite this repository"**, en la columna
+derecha de la página principal.
+
+**Referencia del artículo:** *(pendiente — se completará al momento de la
+publicación).*
+
+**Referencia del código y los datos:** *(pendiente — se asignará un DOI de
+Zenodo al release correspondiente a la versión empleada en el manuscrito).*
+
+El código se distribuye bajo licencia MIT (ver [LICENSE](LICENSE)), que
+permite su uso, modificación y redistribución conservando el aviso de
+autoría. El uso académico del método descrito se rige, además, por las normas
+habituales de atribución y citación.
 
 ## Referencias del framework
 

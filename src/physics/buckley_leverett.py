@@ -38,11 +38,18 @@ def _fw_of_Sw(Sw, params):
     return fractional_flow(Sw, **params)
 
 
-def find_shock_front(params, Swi, Sor, n_grid=20000):
+def find_shock_front(params, Swi, Sor, n_grid=20000, Sw_start=None):
     """
     Determina la saturación de frente de choque (Swf) mediante la
-    construcción de Welge: la tangente trazada desde (Swi, 0) hasta la
-    curva fw(Sw).
+    construcción de Welge: la tangente trazada desde el punto inicial
+    (Sw_start, fw(Sw_start)) hasta la curva fw(Sw).
+
+    Sw_start es la saturación de agua existente al inicio de la inyección.
+    Si el reservorio no ha producido por energía primaria, coincide con la
+    saturación de agua irreducible Swi y la tangente parte de (Swi, 0), que
+    es el caso clásico. Si ya hubo producción primaria, parte del agua
+    móvil está presente antes de inyectar y la tangente debe trazarse desde
+    ese punto: hacerlo desde Swi sobrestimaría el petróleo recuperable.
 
     Se valida con DOS métodos numéricos independientes:
       (A) Búsqueda en malla: maximizar la pendiente secante fw(Sw)/(Sw-Swi).
@@ -57,11 +64,20 @@ def find_shock_front(params, Swi, Sor, n_grid=20000):
     -------
     dict con Swf, fwf, slope (= fw'(Swf) = pendiente de la tangente)
     """
-    Sw_grid = np.linspace(Swi + 1e-6, 1 - Sor - 1e-6, n_grid)
+    if Sw_start is None:
+        Sw_start = Swi
+    if not (Swi - 1e-9 <= Sw_start < 1 - Sor):
+        raise ValueError(
+            f"Sw_start={Sw_start:.4f} debe estar en [Swi, 1-Sor) "
+            f"(Swi={Swi}, Sor={Sor})")
+
+    fw_start = float(_fw_of_Sw(Sw_start, params))
+
+    Sw_grid = np.linspace(Sw_start + 1e-6, 1 - Sor - 1e-6, n_grid)
     fw_grid = _fw_of_Sw(Sw_grid, params)
 
-    # --- Método A: máxima pendiente secante desde (Swi, 0) ---
-    secant_slope = fw_grid / (Sw_grid - Swi)
+    # --- Método A: máxima pendiente secante desde (Sw_start, fw_start) ---
+    secant_slope = (fw_grid - fw_start) / (Sw_grid - Sw_start)
     idx_max = int(np.argmax(secant_slope))
     Swf_A = Sw_grid[idx_max]
     fwf_A = fw_grid[idx_max]
@@ -74,10 +90,10 @@ def find_shock_front(params, Swi, Sor, n_grid=20000):
         fw_m = _fw_of_Sw(max(Sw - h, Swi + 1e-7), params)
         dfw_dSw = (fw_p - fw_m) / (2 * h)
         fw_here = _fw_of_Sw(Sw, params)
-        secant = fw_here / (Sw - Swi)
+        secant = (fw_here - fw_start) / (Sw - Sw_start)
         return dfw_dSw - secant
 
-    lo, hi = Swi + 1e-4, 1 - Sor - 1e-4
+    lo, hi = Sw_start + 1e-4, 1 - Sor - 1e-4
     # Buscar cambio de signo cerca del óptimo de la malla para acotar Brent
     window = max(50 * (Sw_grid[1] - Sw_grid[0]), 1e-3)
     lo_b = max(lo, Swf_A - window)
@@ -88,7 +104,7 @@ def find_shock_front(params, Swi, Sor, n_grid=20000):
         # Si no hay cambio de signo en la ventana, se confía en el método A
         Swf_B = Swf_A
     fwf_B = _fw_of_Sw(Swf_B, params)
-    slope_B = fwf_B / (Swf_B - Swi)
+    slope_B = (fwf_B - fw_start) / (Swf_B - Sw_start)
 
     diff = abs(Swf_A - Swf_B)
     if diff > 5e-3:
@@ -102,13 +118,15 @@ def find_shock_front(params, Swi, Sor, n_grid=20000):
         "Swf": float(Swf_B),
         "fwf": float(fwf_B),
         "slope": float(slope_B),
+        "Sw_start": float(Sw_start),
+        "fw_start": float(fw_start),
         "cross_check_diff": float(diff),
         "Sw_grid": Sw_grid,
         "fw_grid": fw_grid,
     }
 
 
-def welge_results(params, Swi, Sor):
+def welge_results(params, Swi, Sor, Sw_start=None):
     """
     Calcula los resultados clásicos de Welge en el punto de irrupción
     (breakthrough) y la curva de recobro post-irrupción.
@@ -122,21 +140,24 @@ def welge_results(params, Swi, Sor):
       RF_BT                     : factor de recobro (fracción de OOIP) a la irrupción
       recovery_curve            : (Qi[], RF[]) desde irrupción hasta Sw=1-Sor
     """
-    shock = find_shock_front(params, Swi, Sor)
+    shock = find_shock_front(params, Swi, Sor, Sw_start=Sw_start)
     Swf, fwf, slope = shock["Swf"], shock["fwf"], shock["slope"]
+    Sw_start = shock["Sw_start"]
+    fw_start = shock["fw_start"]
 
     Qi_BT = 1.0 / slope
-    # Sw_avg a la irrupción: balance de materia (100% del agua inyectada
-    # permanece en el yacimiento antes de la irrupción) == construcción de
-    # Welge (extensión de la tangente hasta fw=1). Ambas expresiones deben
-    # coincidir; se usa como verificación cruzada adicional.
-    Sw_avg_BT_material_balance = Swi + Qi_BT
-    Sw_avg_BT_welge = Swi + 1.0 / slope
+    # Sw_avg a la irrupción: balance de materia (el agua inyectada que no ha
+    # salido permanece en el yacimiento) == construcción de Welge (extensión
+    # de la tangente hasta fw = 1). Ambas expresiones deben coincidir; se usa
+    # como verificación cruzada adicional.
+    Sw_avg_BT_material_balance = Sw_start + (1.0 - fw_start) * Qi_BT
+    Sw_avg_BT_welge = Sw_start + (1.0 - fw_start) / slope
     if abs(Sw_avg_BT_material_balance - Sw_avg_BT_welge) > 1e-9:
         raise RuntimeError("Inconsistencia entre balance de materia y construcción de Welge.")
     Sw_avg_BT = Sw_avg_BT_welge
 
-    RF_BT = (Sw_avg_BT - Swi) / (1.0 - Swi)
+    # Recobro referido al petróleo presente al INICIO de la inyección
+    RF_BT = (Sw_avg_BT - Sw_start) / (1.0 - Sw_start)
 
     # --- Curva de recobro post-irrupción (familia de tangentes de Welge) ---
     Sw2_array = np.linspace(Swf, 1 - Sor - 1e-6, 200)
@@ -150,7 +171,7 @@ def welge_results(params, Swi, Sor):
 
     Qi_array = 1.0 / dfw2
     Sw_avg_array = Sw2_array + (1.0 - fw2_array) / dfw2
-    RF_array = (Sw_avg_array - Swi) / (1.0 - Swi)
+    RF_array = (Sw_avg_array - Sw_start) / (1.0 - Sw_start)
     RF_array = np.clip(RF_array, 0.0, 1.0)
 
     return {
@@ -160,60 +181,65 @@ def welge_results(params, Swi, Sor):
         "Qi_BT": Qi_BT,
         "Sw_avg_BT": Sw_avg_BT,
         "RF_BT": RF_BT,
+        "Sw_start": Sw_start,
+        "fw_start": fw_start,
         "cross_check_diff": shock["cross_check_diff"],
         "recovery_curve": {"Qi": Qi_array, "RF": RF_array, "Sw2": Sw2_array},
         "fw_curve": {"Sw": shock["Sw_grid"], "fw": shock["fw_grid"]},
     }
 
 
-def displacement_efficiency_at_fw(params, Swi, Sor, fw_limit=0.96):
+def displacement_at_economic_limit(params, Swi, Sor, fw_limit, Sw_start=None):
     """
-    Eficiencia de desplazamiento ED en la zona barrida, evaluada cuando el
-    corte de agua producido alcanza el límite económico fw_limit.
+    Estado del desplazamiento cuando el corte de agua producido alcanza el
+    límite económico fw_limit.
 
-    Se ubica la saturación Sw2 en la cara productora donde fw(Sw2) = fw_limit
-    y se aplica la construcción de Welge para obtener la saturación promedio
-    detrás del frente:
+    A diferencia de la versión anterior, devuelve además los volúmenes
+    porosos inyectados a la irrupción y al límite económico. Esa relación es
+    necesaria para evaluar el barrido areal en el MISMO instante que la
+    eficiencia de desplazamiento, en lugar de mezclar estados distintos.
+
+    Se localiza la saturación Sw2 en la cara productora donde fw(Sw2) =
+    fw_limit y se aplica la construcción de Welge:
 
         Sw_avg = Sw2 + (1 - fw2) / (dfw/dSw)|_Sw2
-        ED     = (Sw_avg - Swi) / (1 - Swi)
+        ED     = (Sw_avg - Sw_start) / (1 - Sw_start)
+        Qi     = 1 / (dfw/dSw)|_Sw2
 
-    Si la irrupción ocurre a un corte de agua mayor que fw_limit (frente muy
-    favorable), se devuelve el valor a la irrupción, que es el mínimo físico
-    alcanzable en ese escenario.
-
-    Parameters
-    ----------
-    fw_limit : float
-        Corte de agua económico (fracción). 0.96 equivale a WOR = 24.
+    ED se refiere al petróleo presente al inicio de la inyección, no al
+    petróleo original en sitio: el waterflooding solo puede recuperar lo que
+    queda tras la producción primaria.
 
     Returns
     -------
-    ED : float
-        Eficiencia de desplazamiento, en [0, 1].
+    dict con ED, Qi_BT, Qi_econ, Swf, Sw_start
     """
-    res = welge_results(params, Swi, Sor)
+    res = welge_results(params, Swi, Sor, Sw_start=Sw_start)
+    Sw_start = res["Sw_start"]
 
+    # Si la irrupción ocurre ya por encima del corte límite, el límite
+    # económico se alcanza en el instante mismo de la irrupción.
     if fw_limit <= res["fwf"]:
-        return float(np.clip(res["RF_BT"], 0.0, 1.0))
+        return {"ED": float(np.clip(res["RF_BT"], 0.0, 1.0)),
+                "Qi_BT": float(res["Qi_BT"]), "Qi_econ": float(res["Qi_BT"]),
+                "Swf": float(res["Swf"]), "Sw_start": float(Sw_start)}
 
-    # Localizar Sw2 tal que fw(Sw2) = fw_limit, después del frente
     Sw_lo, Sw_hi = res["Swf"], 1 - Sor - 1e-7
 
     def gap(Sw):
         return float(_fw_of_Sw(Sw, params)) - fw_limit
 
-    if gap(Sw_hi) < 0:            # nunca alcanza el corte límite
-        Sw2 = Sw_hi
-    else:
-        Sw2 = brentq(gap, Sw_lo, Sw_hi, xtol=1e-9)
+    Sw2 = Sw_hi if gap(Sw_hi) < 0 else brentq(gap, Sw_lo, Sw_hi, xtol=1e-9)
 
     h = 1e-5
     fw2 = float(_fw_of_Sw(Sw2, params))
     dfw = (float(_fw_of_Sw(min(Sw2 + h, 1 - Sor - 1e-7), params))
-           - float(_fw_of_Sw(max(Sw2 - h, Swi + 1e-7), params))) / (2 * h)
+           - float(_fw_of_Sw(max(Sw2 - h, Sw_start + 1e-7), params))) / (2 * h)
     dfw = max(dfw, 1e-8)
 
     Sw_avg = Sw2 + (1.0 - fw2) / dfw
-    ED = (Sw_avg - Swi) / (1.0 - Swi)
-    return float(np.clip(ED, 0.0, 1.0))
+    ED = (Sw_avg - Sw_start) / (1.0 - Sw_start)
+
+    return {"ED": float(np.clip(ED, 0.0, 1.0)),
+            "Qi_BT": float(res["Qi_BT"]), "Qi_econ": float(1.0 / dfw),
+            "Swf": float(res["Swf"]), "Sw_start": float(Sw_start)}

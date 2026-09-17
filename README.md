@@ -71,7 +71,7 @@ unidimensional aislada.
 ## Dataset sintético
 
 `data/synthetic/synthetic_dataset.csv` contiene 5 000 escenarios etiquetados
-(44.6 % aptos / 55.4 % no aptos).
+(38.9 % aptos / 61.1 % no aptos).
 
 **Separación entre variables de entrada y etiqueta.** El modelo se entrena
 únicamente con las variables crudas del reservorio. Las características

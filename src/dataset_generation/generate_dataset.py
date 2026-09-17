@@ -32,7 +32,7 @@ import pandas as pd
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "physics"))
 
-from buckley_leverett import displacement_efficiency_at_fw
+from buckley_leverett import displacement_at_economic_limit
 from darcy import injection_rate_for_dp, endpoint_mobility_ratio
 from sweep_efficiency import total_recovery_factor
 
@@ -92,27 +92,44 @@ def compute_physics(row, op=None):
         muo=row["muo_cp"], muw=row["muw_cp"],
     )
 
-    ED = displacement_efficiency_at_fw(
-        params, row["Swi"], row["Sor"], fw_limit=op["fw_limit"])
+    # El desplazamiento arranca en la saturación de agua EXISTENTE, no en la
+    # irreducible: el waterflooding solo puede recuperar el petróleo que
+    # queda tras la producción primaria. Supuesto bifásico, sin gas libre
+    # (ver current_oil_saturation en variable_ranges.py).
+    Sw_start = 1.0 - row["So_current"]
+
+    disp = displacement_at_economic_limit(
+        params, row["Swi"], row["Sor"], fw_limit=op["fw_limit"],
+        Sw_start=Sw_start)
 
     M = endpoint_mobility_ratio(
         row["krw_max"], row["muw_cp"], row["kro_max"], row["muo_cp"])
 
-    sweep = total_recovery_factor(
-        ED, M, row["Vdp"], wor_limit=op["wor_limit"])
+    # Razón de volúmenes inyectados entre el límite económico y la irrupción:
+    # permite evaluar el barrido areal en el mismo instante que ED y EV.
+    qi_ratio = disp["Qi_econ"] / disp["Qi_BT"] if disp["Qi_BT"] > 0 else 1.0
 
+    sweep = total_recovery_factor(
+        disp["ED"], M, row["Vdp"], qi_ratio=qi_ratio,
+        wor_limit=op["wor_limit"])
+
+    # Inyectividad con permeabilidad EFECTIVA al agua y factor volumétrico.
     q_inj = injection_rate_for_dp(
         k_md=row["k_md"], h_ft=row["h_net_ft"], muw_cp=row["muw_cp"],
-        re_ft=op["re_ft"], dp_psi=op["dp_max_psi"],
-        rw_ft=op["rw_ft"], skin=row["skin"])
+        re_ft=op["re_ft"], dp_psi=op["dp_max_psi"], krw=row["krw_max"],
+        Bw=op["Bw"], rw_ft=op["rw_ft"], skin=row["skin"])
 
     return {
-        "ED": ED,
+        "ED": disp["ED"],
         "M": M,
         "EA": sweep["EA"],
+        "EA_BT": sweep["EA_BT"],
         "EV": sweep["EV"],
         "RF_total": sweep["RF_total"],
         "q_inj_bpd": q_inj,
+        "Sw_start": disp["Sw_start"],
+        "Qi_BT": disp["Qi_BT"],
+        "Qi_econ": disp["Qi_econ"],
     }
 
 
@@ -166,7 +183,8 @@ FEATURE_COLUMNS = (
 )
 
 # Columnas derivadas: se conservan para trazabilidad, no para entrenar
-DERIVED_COLUMNS = ["ED", "M", "EA", "EV", "RF_total", "q_inj_bpd"]
+DERIVED_COLUMNS = ["ED", "M", "EA", "EA_BT", "EV", "RF_total",
+                   "q_inj_bpd", "Sw_start", "Qi_BT", "Qi_econ"]
 
 
 if __name__ == "__main__":

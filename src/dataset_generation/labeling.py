@@ -39,10 +39,14 @@ THRESHOLDS = {
     "h_net_min_ft": 10.0,
     # Espesor neto mínimo para que el volumen barrido justifique la inversión.
 
-    "So_min": 0.40,
-    # El método de Dykstra-Parsons se formuló para saturaciones iniciales de
-    # petróleo de 45 % o mayores; 0.40 se toma como piso conservador por
-    # debajo del cual queda poco petróleo móvil por recuperar.
+    "So_min": 0.45,
+    # El método de Dykstra-Parsons se formuló para saturaciones de petróleo
+    # del 45 % o mayores. El umbral se fija EN ese valor, no por debajo: un
+    # umbral menor (por ejemplo 0.40) sería más PERMISIVO, no más
+    # conservador, porque admitiría escenarios fuera del rango en que el
+    # método de barrido vertical fue validado. Mantenerlo en 0.45 asegura
+    # que todo caso etiquetado como apto haya sido evaluado dentro del
+    # dominio de validez de las correlaciones empleadas.
 
     "muo_max_cp": 50.0,
     # Por encima de este valor el frente es inestable y el caso corresponde

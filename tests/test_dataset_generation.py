@@ -25,9 +25,13 @@ sys.path.insert(0, os.path.join(HERE, "..", "src", "physics"))
 sys.path.insert(0, os.path.join(HERE, "..", "src", "dataset_generation"))
 
 from sweep_efficiency import (areal_sweep_breakthrough,
+                              areal_sweep_after_breakthrough,
                               vertical_sweep_dykstra_parsons,
                               total_recovery_factor,
                               _layer_permeabilities, _front_position)
+from buckley_leverett import welge_results, displacement_at_economic_limit
+from darcy import radial_injectivity_index
+from variable_ranges import OPERATIONAL_CONSTANTS
 from variable_ranges import (oil_viscosity_from_api,
                              water_viscosity_from_temperature,
                              current_oil_saturation)
@@ -121,6 +125,51 @@ check(f"Ninguna variable aislada determina la etiqueta (|r|max={corr_max:.2f})",
 
 check("Las derivadas no estan en las features de entrenamiento",
       not set(gd.DERIVED_COLUMNS) & set(gd.FEATURE_COLUMNS))
+
+# ----------------------------------------------------------------------
+# 9. Correcciones de consistencia física
+# ----------------------------------------------------------------------
+_p = dict(Swi=0.20, Sor=0.25, kro_max=0.80, krw_max=0.30,
+          no=2.0, nw=2.0, muo=5.0, muw=0.5)
+
+# (a) El desplazamiento debe arrancar en la saturación existente, no en Swi.
+#     Si ya hubo producción primaria (Sw_start > Swi), el recobro referido al
+#     petróleo presente al inicio del flood debe ser MENOR.
+_virgen = displacement_at_economic_limit(_p, 0.20, 0.25, 0.9615, Sw_start=0.20)
+_agotado = displacement_at_economic_limit(_p, 0.20, 0.25, 0.9615, Sw_start=0.40)
+check("Un reservorio con agua movil previa recupera menos (ED)",
+      _agotado["ED"] < _virgen["ED"])
+check("La construccion de Welge parte de la saturacion indicada",
+      abs(_agotado["Sw_start"] - 0.40) < 1e-9)
+
+# (b) El barrido areal crece despues de la irrupcion y nunca la desmejora.
+_ea_bt = float(areal_sweep_breakthrough(2.0))
+check("EA post-irrupcion nunca es menor que EA a la irrupcion",
+      areal_sweep_after_breakthrough(2.0, 1.0) >= _ea_bt - 1e-9)
+check("EA crece con el volumen inyectado",
+      areal_sweep_after_breakthrough(2.0, 4.0) >
+      areal_sweep_after_breakthrough(2.0, 1.5))
+check("EA se mantiene acotada a 1.0",
+      areal_sweep_after_breakthrough(2.0, 1e6) <= 1.0)
+
+# (c) La inyectividad debe usar permeabilidad efectiva al agua, no absoluta.
+_ii_abs = radial_injectivity_index(200, 40, 1.0, 1000, krw=1.0, Bw=1.0)
+_ii_ef = radial_injectivity_index(200, 40, 1.0, 1000, krw=0.30, Bw=1.02)
+check("La inyectividad efectiva es menor que la calculada con k absoluta",
+      _ii_ef < _ii_abs)
+check("La inyectividad escala linealmente con krw",
+      abs(radial_injectivity_index(200, 40, 1.0, 1000, krw=0.50, Bw=1.0)
+          / _ii_abs - 0.50) < 1e-9)
+
+# (d) El corte de agua limite y el WOR limite describen el mismo instante.
+_wor = OPERATIONAL_CONSTANTS["wor_limit"]
+_fw = OPERATIONAL_CONSTANTS["fw_limit"]
+check("fw_limite y WOR_limite son mutuamente consistentes",
+      abs(_fw - _wor / (1.0 + _wor)) < 1e-9)
+
+# (e) El umbral de saturacion respeta el dominio de validez de Dykstra-Parsons.
+check("El umbral de So no es mas permisivo que el rango validado (>= 0.45)",
+      THRESHOLDS["So_min"] >= 0.45)
 
 # ----------------------------------------------------------------------
 if __name__ == "__main__":

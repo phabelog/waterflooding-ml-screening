@@ -59,15 +59,25 @@ CONDITIONED_VARIABLES = {
     "muo_cp":      "Viscosidad del petróleo, condicionada a la gravedad API",
     "muw_cp":      "Viscosidad del agua, condicionada a la temperatura",
     "So_current":  "Saturación actual de petróleo, entre Sor y (1 - Swi)",
+    "Sw_start":    "Saturación de agua al inicio de la inyección = 1 - So_current",
 }
 
 # Constantes operacionales del escenario de inyección
+#
+# wor_limit y fw_limit describen EL MISMO instante del proceso y por eso se
+# derivan uno del otro: fw = WOR / (1 + WOR). Fijarlos de forma independiente
+# (por ejemplo WOR = 25 junto con fw = 0.96, que corresponde a WOR = 24) haría
+# que la eficiencia de desplazamiento y la de barrido vertical se evaluaran en
+# momentos ligeramente distintos.
+_WOR_LIMIT = 25.0
+
 OPERATIONAL_CONSTANTS = {
-    "re_ft": 1000.0,      # radio de drenaje del patrón
-    "rw_ft": 0.33,        # radio del pozo
-    "dp_max_psi": 1000.0, # caída de presión disponible para inyección
-    "wor_limit": 25.0,    # WOR económico límite [bbl agua / bbl petróleo]
-    "fw_limit": 0.96,     # corte de agua equivalente al WOR límite
+    "re_ft": 1000.0,       # radio de drenaje del patrón
+    "rw_ft": 0.33,         # radio del pozo
+    "dp_max_psi": 1000.0,  # caída de presión disponible para inyección
+    "Bw": 1.02,            # factor volumétrico del agua de inyección
+    "wor_limit": _WOR_LIMIT,
+    "fw_limit": _WOR_LIMIT / (1.0 + _WOR_LIMIT),   # = 0.96154
 }
 
 
@@ -123,6 +133,21 @@ def current_oil_saturation(Swi, Sor, fraction):
     'fraction' en [0, 1] indica qué parte del petróleo móvil permanece en
     el reservorio al momento de evaluar la inyección (1 = no se ha producido
     nada por energía primaria; 0 = solo queda el residual).
+
+    SUPUESTO SOBRE LA FASE GASEOSA
+    ------------------------------
+    El framework es estrictamente bifásico agua-petróleo. Se asume que el
+    reservorio se mantiene por encima de la presión de burbuja o que el gas
+    libre ha sido redisuelto al represurizar, de modo que NO existe fase
+    gaseosa al inicio de la inyección. En consecuencia:
+
+        Sw_inicial = 1 - So_actual
+
+    es decir, el espacio poroso que no ocupa el petróleo lo ocupa el agua, y
+    Sw_inicial >= Swi refleja el agua móvil acumulada durante la producción
+    primaria. Si en el reservorio real existiera saturación de gas libre, el
+    recobro estimado sería conservador, ya que parte del volumen poroso que
+    aquí se atribuye al agua correspondería en realidad al gas.
     """
     Swi = np.asarray(Swi, dtype=float)
     Sor = np.asarray(Sor, dtype=float)

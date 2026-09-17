@@ -216,17 +216,64 @@ def vertical_sweep_dykstra_parsons(Vdp, M, wor_limit=25.0, n_layers=50):
 #  RECOBRO TOTAL
 # ======================================================================
 
-def total_recovery_factor(ED, M, Vdp, wor_limit=25.0, n_layers=50):
+def areal_sweep_after_breakthrough(M, qi_ratio):
+    """
+    Eficiencia de barrido areal DESPUÉS de la irrupción, patrón de cinco
+    puntos (Craig et al., 1955):
+
+        EA = EA_BT + 0.2749 * ln(Winj / Winj_BT)
+
+    donde Winj/Winj_BT es la razón entre el agua acumulada inyectada y la
+    inyectada hasta la irrupción. El coeficiente 0.2749 corresponde al
+    patrón de cinco puntos.
+
+    El barrido areal NO se detiene en la irrupción: el agua sigue ampliando
+    el área contactada mientras se inyecta. Evaluar EA a la irrupción cuando
+    ED y EV se evalúan al límite económico mezclaría estados distintos del
+    mismo proceso y subestimaría el recobro.
+
+    Parameters
+    ----------
+    M : float
+        Relación de movilidad de punto extremo.
+    qi_ratio : float
+        Winj / Winj_BT (>= 1). Un valor de 1 devuelve el barrido a la
+        irrupción.
+
+    Returns
+    -------
+    EA : float, acotada a [EA_BT, 1.0]
+    """
+    EA_BT = float(areal_sweep_breakthrough(M))
+    qi_ratio = max(float(qi_ratio), 1.0)
+    EA = EA_BT + 0.2749 * np.log(qi_ratio)
+    return float(np.clip(EA, EA_BT, 1.0))
+
+
+def total_recovery_factor(ED, M, Vdp, qi_ratio=1.0,
+                          wor_limit=25.0, n_layers=50):
     """
     Recobro total como producto de las tres eficiencias:
 
         RF_total = ED * EA * EV
 
+    Las tres se evalúan en el MISMO instante del proceso: el momento en que
+    el corte de agua producido alcanza el límite económico.
+
+      ED : Buckley-Leverett / Welge al corte de agua límite.
+      EA : Craig, corregido después de la irrupción con la razón de
+           volúmenes inyectados qi_ratio = Qi_límite / Qi_irrupción.
+      EV : Dykstra-Parsons al mismo WOR límite.
+
+    Pasar qi_ratio = 1 devuelve el barrido areal a la irrupción, que es una
+    cota inferior conservadora del recobro.
+
     Returns
     -------
-    dict con RF_total, ED, EA, EV
+    dict con RF_total, ED, EA, EV, EA_BT
     """
-    EA = float(areal_sweep_breakthrough(M))
+    EA_BT = float(areal_sweep_breakthrough(M))
+    EA = areal_sweep_after_breakthrough(M, qi_ratio)
     EV = vertical_sweep_dykstra_parsons(Vdp, M, wor_limit, n_layers)
     RF = float(ED) * EA * EV
 
@@ -234,5 +281,6 @@ def total_recovery_factor(ED, M, Vdp, wor_limit=25.0, n_layers=50):
         "RF_total": float(np.clip(RF, 0.0, 1.0)),
         "ED": float(ED),
         "EA": EA,
+        "EA_BT": EA_BT,
         "EV": EV,
     }

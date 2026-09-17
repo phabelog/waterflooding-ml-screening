@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.DS_Store
+.venv/
+venv/
+
+# Datos reales de EP Petroecuador: bloqueados por defecto.
+# Se publican solo de forma deliberada y anonimizada, con autorización
+# expresa de la institución (ver sección "Datos" del README).
+data/real_field_validation/*.xlsx
+data/real_field_validation/*.xls
+data/real_field_validation/*.csv

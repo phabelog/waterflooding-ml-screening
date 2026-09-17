@@ -1,0 +1,31 @@
+cff-version: 1.2.0
+message: "Si utiliza este software, este conjunto de datos o el método que implementan, por favor cite el trabajo como se indica a continuación."
+title: "Modelo de Machine Learning para el cribado técnico de reservorios candidatos a waterflooding"
+abstract: >-
+  Framework físico de flujo bifásico (ley de Darcy, permeabilidades relativas
+  de Corey, teoría de desplazamiento de Buckley-Leverett con construcción de
+  Welge, y eficiencias de barrido areal y vertical) acoplado a un modelo de
+  clasificación supervisada para el cribado técnico de reservorios candidatos
+  a proyectos de inyección de agua. El framework genera un conjunto de datos
+  sintéticos etiquetados que se emplea para entrenar el clasificador, cuya
+  capacidad de generalización se evalúa mediante validación externa con datos
+  reales de campo.
+type: software
+authors:
+  - given-names: "Phabell Andre"
+    family-names: "Diaz Klinger"
+    affiliation: "Escuela Superior Politécnica del Litoral (ESPOL)"
+  - given-names: "Juan Joseph"
+    family-names: "Martinez Alvarez"
+    affiliation: "Escuela Superior Politécnica del Litoral (ESPOL)"
+repository-code: "https://github.com/phabelog/waterflooding-ml-screening"
+license: MIT
+keywords:
+  - waterflooding
+  - inyección de agua
+  - cribado de reservorios
+  - machine learning
+  - Buckley-Leverett
+  - Dykstra-Parsons
+  - ingeniería de yacimientos
+  - Cuenca Oriente

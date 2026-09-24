@@ -21,7 +21,7 @@ de reservorios candidatos a proyectos de inyección de agua (*waterflooding*).
 |---|---|---|
 | 1. Generación y recolección de datos | Framework físico, variables de entrada, escenarios sintéticos, etiquetado apto/no apto | Completada (salvo datos reales) |
 | 2. Análisis de datos | Estadística descriptiva, correlación, balance de clases, consistencia física | Completada |
-| 3. Preprocesamiento | Limpieza, división estratificada, escalado, SMOTE (solo en entrenamiento) | Pendiente |
+| 3. Preprocesamiento | Limpieza, división estratificada, escalado, SMOTE (solo en entrenamiento) | Completada |
 | 4. Desarrollo de modelos | Árbol de decisión (base), Random Forest, XGBoost, SVM, optimización de hiperparámetros | Pendiente |
 | 5. Evaluación y validación | Métricas, matriz de confusión, interpretabilidad, comparación con métodos tradicionales, validación externa | Pendiente |
 | 6. Interfaz gráfica | Aplicación en Streamlit: ingreso de parámetros y predicción con probabilidad asociada | Pendiente |
@@ -33,12 +33,13 @@ de reservorios candidatos a proyectos de inyección de agua (*waterflooding*).
 │   ├── physics/            # Framework físico: Corey, Buckley-Leverett, Darcy, eficiencias de barrido
 │   ├── dataset_generation/ # Variables, rangos, etiquetado y generación del dataset sintético
 │   ├── analysis/           # Análisis y auditoría del dataset (Etapa 2)
-│   ├── preprocessing/      # Limpieza, división, escalado, SMOTE (Etapa 3)
+│   ├── preprocessing/      # Limpieza, división, escalado, tratamiento del desbalance (Etapa 3)
 │   ├── models/             # Entrenamiento y evaluación de modelos (Etapa 4)
 │   └── app/                # Aplicación Streamlit (Etapa 6)
 ├── notebooks/              # Cuadernos ejecutables (Google Colab)
 │   ├── 01_framework_fisico.ipynb
-│   └── 02_analisis_datos.ipynb
+│   ├── 02_analisis_datos.ipynb
+│   └── 03_preprocesamiento.ipynb
 ├── data/
 │   ├── synthetic/          # Dataset sintético generado (5 000 escenarios etiquetados)
 │   └── real_field_validation/  # Datos reales para validación externa (ver sección "Datos")
@@ -88,9 +89,10 @@ pip install -r requirements.txt
 python tests/test_physics_framework.py    # framework físico
 python tests/test_dataset_generation.py   # eficiencias de barrido, etiquetado y dataset
 python tests/test_data_analysis.py        # análisis y auditoría del dataset (Etapa 2)
+python tests/test_preprocessing.py        # preprocesamiento sin fuga de información (Etapa 3)
 ```
 
-Ambos conjuntos de verificaciones deben superarse en su totalidad.
+Todos los conjuntos de verificaciones deben superarse en su totalidad.
 
 ## Cómo ejecutar
 

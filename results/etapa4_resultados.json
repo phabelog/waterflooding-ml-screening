@@ -1,0 +1,92 @@
+{
+  "metrica_de_optimizacion": "f1",
+  "particiones_cv": 5,
+  "semilla": 42,
+  "versiones": {
+    "scikit-learn": "1.6.1",
+    "xgboost": "3.4.1"
+  },
+  "modelos": {
+    "arbol_decision": {
+      "mejores_hiperparametros": {
+        "max_depth": 12,
+        "min_samples_leaf": 20
+      },
+      "validacion_cruzada": {
+        "f1_media": 0.9124300844548472,
+        "f1_desv": 0.013792159204455508,
+        "precision_media": 0.8847820782598905,
+        "precision_desv": 0.022348259206452756,
+        "recall_media": 0.9421881441174046,
+        "recall_desv": 0.01099033415195627,
+        "accuracy_media": 0.9295,
+        "accuracy_desv": 0.011742018565817367,
+        "f1_entrenamiento": 0.9347573284827485,
+        "brecha_f1": 0.022327244027901316,
+        "combinaciones": 15,
+        "tiempo_s": 10.8
+      }
+    },
+    "random_forest": {
+      "mejores_hiperparametros": {
+        "max_features": 0.8,
+        "min_samples_leaf": 1
+      },
+      "validacion_cruzada": {
+        "f1_media": 0.9316862226720574,
+        "f1_desv": 0.010684548506913989,
+        "precision_media": 0.9221207414690091,
+        "precision_desv": 0.013355920380480456,
+        "recall_media": 0.9415429961249897,
+        "recall_desv": 0.011444081809858748,
+        "accuracy_media": 0.9462499999999998,
+        "accuracy_desv": 0.00840386815698583,
+        "f1_entrenamiento": 1.0,
+        "brecha_f1": 0.06831377732794264,
+        "combinaciones": 6,
+        "tiempo_s": 218.8
+      }
+    },
+    "xgboost": {
+      "mejores_hiperparametros": {
+        "learning_rate": 0.05,
+        "max_depth": 7,
+        "n_estimators": 600
+      },
+      "validacion_cruzada": {
+        "f1_media": 0.9525835801940022,
+        "f1_desv": 0.008264480283541117,
+        "precision_media": 0.9384158821828918,
+        "precision_desv": 0.011759246262797795,
+        "recall_media": 0.9672479182125485,
+        "recall_desv": 0.007143167855245902,
+        "accuracy_media": 0.9625,
+        "accuracy_desv": 0.006661456297237085,
+        "f1_entrenamiento": 1.0,
+        "brecha_f1": 0.047416419805997756,
+        "combinaciones": 12,
+        "tiempo_s": 44.6
+      }
+    },
+    "svm": {
+      "mejores_hiperparametros": {
+        "C": 100,
+        "gamma": 0.01
+      },
+      "validacion_cruzada": {
+        "f1_media": 0.8391904211302978,
+        "f1_desv": 0.008001015361649662,
+        "precision_media": 0.8083145326364187,
+        "precision_desv": 0.014743620275734736,
+        "recall_media": 0.8728398878720423,
+        "recall_desv": 0.012186718681490547,
+        "accuracy_media": 0.86975,
+        "accuracy_desv": 0.007305819598101244,
+        "f1_entrenamiento": 0.9115598443355213,
+        "brecha_f1": 0.07236942320522344,
+        "combinaciones": 9,
+        "tiempo_s": 55.7
+      }
+    }
+  }
+}

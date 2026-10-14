@@ -137,7 +137,8 @@ def welge_results(params, Swi, Sor, Sw_start=None):
       Swf, fwf, slope           : frente de choque
       Qi_BT                     : volúmenes porosos inyectados a la irrupción
       Sw_avg_BT                 : saturación promedio de agua a la irrupción
-      RF_BT                     : factor de recobro (fracción de OOIP) a la irrupción
+      RF_BT                     : factor de recobro a la irrupción (fracción del petróleo
+                                  presente al inicio de la inyección)
       recovery_curve            : (Qi[], RF[]) desde irrupción hasta Sw=1-Sor
     """
     shock = find_shock_front(params, Swi, Sor, Sw_start=Sw_start)

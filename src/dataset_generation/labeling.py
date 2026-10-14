@@ -67,9 +67,9 @@ THRESHOLDS = {
     # vertical de forma severa.
 
     "RF_total_min": 0.15,
-    # Recobro incremental mínimo (fracción del OOIP) para que el proyecto
-    # tenga sentido técnico-económico, ya corregido por barrido areal y
-    # vertical.
+    # Recobro mínimo para que el proyecto tenga sentido técnico-económico,
+    # como fracción del petróleo presente al INICIO de la inyección (no del
+    # petróleo original en sitio), ya corregido por barrido areal y vertical.
 
     "injectivity_min_bpd": 150.0,
     # Caudal de inyección mínimo por pozo [bbl/d] alcanzable con la caída de
@@ -171,7 +171,7 @@ def thresholds_table(th=None):
         ("NIVEL 2 — Desempeño físico", "", ""),
         ("Relación de movilidad",    f"<= {th['M_max']:.1f}", "adimensional"),
         ("Coef. Dykstra-Parsons",    f"<= {th['Vdp_max']:.2f}", "adimensional"),
-        ("Recobro total",            f">= {th['RF_total_min']*100:.0f}", "% OOIP"),
+        ("Recobro total",            f">= {th['RF_total_min']*100:.0f}", "% del petróleo al inicio de la inyección"),
         ("Caudal de inyección",      f">= {th['injectivity_min_bpd']:.0f}", "bbl/d"),
     ]
     lines = [f"{'Criterio':<28}{'Umbral':>12}  {'Unidad'}", "-" * 58]

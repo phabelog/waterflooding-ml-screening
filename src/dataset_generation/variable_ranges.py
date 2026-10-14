@@ -43,9 +43,8 @@ INPUT_VARIABLES = {
 }
 
 # Variables que describen las curvas de permeabilidad relativa. Son entradas
-# válidas del modelo, pero en la práctica muchas veces no se dispone de
-# análisis SCAL; por eso se manejan en un grupo aparte y el estudio evaluará
-# el desempeño del modelo con y sin ellas.
+# del modelo; en los datos de campo se obtienen ajustando el modelo de Corey
+# a las curvas de laboratorio (análisis SCAL).
 RELPERM_VARIABLES = {
     "kro_max": (0.60, 0.95, "uniform", "kro en Sw = Swi (end-point)"),
     "krw_max": (0.15, 0.55, "uniform", "krw en Sw = 1 - Sor (end-point)"),

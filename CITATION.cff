@@ -8,8 +8,9 @@ abstract: >-
   clasificación supervisada para el cribado técnico de reservorios candidatos
   a proyectos de inyección de agua. El framework genera un conjunto de datos
   sintéticos etiquetados que se emplea para entrenar el clasificador, cuya
-  capacidad de generalización se evalúa mediante validación externa con datos
-  reales de campo.
+  capacidad de generalización se evalúa con datos de campo de una arena del
+  Activo Auca (Bloque 61, Ecuador), por patrón de inyección y mediante
+  contraste físico con la historia de inyección y producción.
 type: software
 authors:
   - given-names: "Phabell Andre"

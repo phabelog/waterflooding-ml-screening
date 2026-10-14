@@ -19,11 +19,11 @@ de reservorios candidatos a proyectos de inyección de agua (*waterflooding*).
 
 | Etapa | Contenido | Estado |
 |---|---|---|
-| 1. Generación y recolección de datos | Framework físico, variables de entrada, escenarios sintéticos, etiquetado apto/no apto | Completada (salvo datos reales) |
+| 1. Generación y recolección de datos | Framework físico, variables de entrada, escenarios sintéticos, etiquetado apto/no apto | Completada (levantamiento de datos de campo programado) |
 | 2. Análisis de datos | Estadística descriptiva, correlación, balance de clases, consistencia física | Completada |
-| 3. Preprocesamiento | Limpieza, división estratificada, escalado, SMOTE (solo en entrenamiento) | Completada |
+| 3. Preprocesamiento | Atípicos y transformación logarítmica, división estratificada, escalado dentro del pipeline, ponderación de clases (sin SMOTE) | Completada |
 | 4. Desarrollo de modelos | Árbol de decisión (base), Random Forest, XGBoost, SVM, optimización de hiperparámetros | Completada |
-| 5. Evaluación y validación | Métricas, matriz de confusión, interpretabilidad, comparación con métodos tradicionales, validación externa | Pendiente |
+| 5. Evaluación y validación | Métricas, matriz de confusión, interpretabilidad, comparación con métodos tradicionales, validación con datos de campo (una arena del Activo Auca) | Pendiente |
 | 6. Interfaz gráfica | Aplicación en Streamlit: ingreso de parámetros y predicción con probabilidad asociada | Pendiente |
 
 ## Estructura del repositorio
@@ -43,7 +43,7 @@ de reservorios candidatos a proyectos de inyección de agua (*waterflooding*).
 │   └── 04_desarrollo_modelos.ipynb
 ├── data/
 │   ├── synthetic/          # Dataset sintético generado (5 000 escenarios etiquetados)
-│   └── real_field_validation/  # Datos reales para validación externa (ver sección "Datos")
+│   └── real_field_validation/  # Datos de campo para la validación; no se publican (ver sección "Datos")
 ├── results/                # Mejores hiperparámetros y métricas de validación cruzada (Etapa 4)
 ├── docs/                   # Figuras y documentación de la metodología
 └── tests/                  # Verificaciones automatizadas
@@ -63,7 +63,8 @@ El módulo `src/physics/` implementa:
   inyectividad radial.
 - **Eficiencias de barrido** — barrido areal mediante la correlación de
   Willhite (1986) sobre la curva de Craig (1971) para patrón de cinco
-  puntos, y barrido vertical resolviendo directamente el modelo
+  puntos, con la corrección posterior a la irrupción de Craig et al. (1955),
+  y barrido vertical resolviendo directamente el modelo
   estratificado de Dykstra y Parsons (1950).
 
 El recobro total se calcula como el producto de las tres eficiencias
@@ -112,19 +113,33 @@ python src/dataset_generation/generate_dataset.py
 
 ## Datos
 
-El conjunto de validación externa (*blind validation*) provendrá de datos
-reales de campo solicitados formalmente a EP Petroecuador (Gerencia de Activo
-Auca), en el marco del convenio de cooperación con ESPOL. **La solicitud se
-encuentra en trámite**; los datos aún no han sido recibidos y la carpeta
-`data/real_field_validation/` está vacía.
+Los datos de campo se usan únicamente para validar el modelo (Etapa 5); no
+intervienen en el entrenamiento. Por recomendación de los ingenieros de EP
+Petroecuador (Gerencia de Activo Auca), la validación se limita a **un campo y
+una arena del Bloque 61** (candidata: U Inferior, en Auca Central o Auca Sur).
+Los autores levantan los datos en las oficinas del Activo Auca, bajo el
+acuerdo de confidencialidad suscrito. La validación tiene dos niveles:
 
-Una vez recibidos, se publicarán en este repositorio de forma anonimizada,
-sujeto a la autorización expresa de la institución. Hasta entonces,
-`.gitignore` bloquea por defecto los archivos de esa carpeta para evitar
-publicaciones involuntarias.
+1. **Validación por patrón de inyección (a ciegas).** Cada patrón (inyector y
+   productores asociados) es un caso con las 16 variables de entrada del
+   modelo. Su etiqueta de campo (apto / no apto) se asigna según la respuesta
+   observada a la inyección, con un criterio acordado con los ingenieros antes
+   de aplicar el modelo. Si no hay información por patrón, la unidad pasa a
+   ser el pozo productor.
+2. **Contraste físico de la arena.** El caudal de inyección, la irrupción del
+   agua, la relación agua-petróleo y el recobro calculados con el framework se
+   comparan con la historia real de inyección y producción.
+
+La función `domain_report` (`src/preprocessing/preprocess.py`) revisa estos
+datos contra el dominio de entrenamiento: los faltantes no se imputan y los
+valores fuera de rango se señalan.
+
+Los datos de campo **no se publican**: `.gitignore` bloquea por defecto los
+archivos de `data/real_field_validation/`. Solo podrían publicarse de forma
+anonimizada y con autorización expresa de la institución.
 
 Los resultados de las Etapas 2 a 4 se obtienen sobre el dataset sintético y
-no dependen de estos datos; la validación externa corresponde a la Etapa 5.
+no dependen de estos datos.
 
 ## Citación y uso
 

@@ -86,11 +86,11 @@ def iqr_outliers(df, columns=None, log_columns=None, k=1.5):
 
 def domain_report(df_new, df_reference, columns=None):
     """
-    Revisa un conjunto nuevo (por ejemplo, los datos de EP Petroecuador)
+    Revisa un conjunto nuevo (por ejemplo, los datos de campo del Activo Auca)
     contra el dominio del conjunto de entrenamiento.
 
     Reporta, por variable:
-      - faltantes : valores ausentes ("N/D" en la solicitud de datos)
+      - faltantes : valores ausentes ("N/D" en la plantilla de levantamiento)
       - fuera_rango : valores fuera del mínimo-máximo del entrenamiento
 
     Política adoptada: los registros con variables faltantes NO se imputan.

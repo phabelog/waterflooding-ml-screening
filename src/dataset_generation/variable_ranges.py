@@ -5,8 +5,8 @@ Corresponde al paso 1.2 del flujo de trabajo metodológico:
 "Definición de variables de entrada y sus rangos".
 
 Los rangos se orientan a reservorios de arenisca de la Cuenca Oriente
-(Activo Auca: Basal Tena, Napo "U", Napo "T" y Hollín), que es el entorno
-donde se hará la validación externa con datos de EP Petroecuador. Se
+(Activo Auca: Basal Tena, Napo "U", Napo "T" y Hollín). La validación con
+datos de campo se hará en una arena del Activo Auca (Bloque 61). Se
 mantienen deliberadamente más amplios que los valores promedio reportados
 para el campo, de modo que el dataset cubra también escenarios claramente
 no aptos y el modelo aprenda la frontera de decisión, no solo la zona
@@ -104,7 +104,7 @@ def oil_viscosity_from_api(api, rng, scatter_log10=0.25):
 
     Esto NO pretende ser una correlación PVT publicada: es una restricción
     de consistencia interna del dataset sintético. Los valores reales se
-    contrastarán contra los PVT que entregue EP Petroecuador.
+    contrastarán con los PVT de la arena seleccionada para la validación.
     """
     api = np.asarray(api, dtype=float)
     log_med = 2.0 - 0.06 * api

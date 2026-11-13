@@ -9,14 +9,13 @@ sintéticos generados por el framework físico. Los datos de campo facilitados
 por EP Petroecuador se usan solo como referencia (contexto), de forma
 anonimizada; este trabajo no incluye una validación de campo.
 
-**Autores:** Phabell Andre Diaz Klinger, Juan Joseph Martinez Alvarez
-**Tutor:** Ing. Freddy Paul Carrión Maldonado, Ph.D.
+**Autores:** Phabell Andre Diaz Klinger, Juan Joseph Martinez Alvarez y Freddy Paul Carrión Maldonado, Ph.D. (tutor)
 **Institución:** Escuela Superior Politécnica del Litoral (ESPOL)
 
 ## Objetivo
 
-Desarrollar un modelo de Machine Learning, informado por un framework físico
-de flujo bifásico (ley de Darcy, permeabilidades relativas de Corey, teoría
+Desarrollar un modelo de Machine Learning, entrenado con datos sintéticos
+generados por un framework físico de flujo bifásico (ley de Darcy, permeabilidades relativas de Corey, teoría
 de desplazamiento de Buckley-Leverett), para el cribado técnico (*screening*)
 de reservorios candidatos a proyectos de inyección de agua (*waterflooding*).
 
@@ -205,12 +204,13 @@ habituales de atribución y citación.
 
 ## Referencias del framework
 
-- Buckley, S. E., & Leverett, M. C. (1942). *Mechanism of fluid displacement in sands*. Transactions of the AIME, 146(1), 107–116.
-- Corey, A. T. (1954). *The interrelation between gas and oil relative permeabilities*. Producers Monthly, 19(1), 38–41.
-- Craig, F. F. (1971). *The Reservoir Engineering Aspects of Waterflooding*. SPE Monograph Series, Vol. 3.
-- Dykstra, H., & Parsons, R. L. (1950). *The prediction of oil recovery by water flood*. Secondary Recovery of Oil in the United States, 2, 160–174.
-- Welge, H. J. (1952). *A simplified method for computing oil recovery by gas or water drive*. JPT, 4(4), 91–98.
-- Willhite, G. P. (1986). *Waterflooding*. SPE Textbook Series, Vol. 3.
+- Buckley, S. E., & Leverett, M. C. (1942). Mechanism of fluid displacement in sands. *Transactions of the AIME, 146*(01), 107–116. https://doi.org/10.2118/942107-G
+- Corey, A. T. (1954). The interrelation between gas and oil relative permeabilities. *Producers Monthly, 19*(1), 38–41.
+- Craig, F. F. (1971). *The reservoir engineering aspects of waterflooding* (SPE Monograph Series, Vol. 3). Henry L. Doherty Memorial Fund of AIME.
+- Craig, F. F., Geffen, T. M., & Morse, R. A. (1955). Oil recovery performance of pattern gas or water injection operations from model tests. *Transactions of the AIME, 204*(01), 7–15. https://doi.org/10.2118/413-G
+- Dykstra, H., & Parsons, R. L. (1950). The prediction of oil recovery by water flood. En *Secondary recovery of oil in the United States* (2nd ed., pp. 160–174). American Petroleum Institute.
+- Welge, H. J. (1952). A simplified method for computing oil recovery by gas or water drive. *Journal of Petroleum Technology, 4*(04), 91–98. https://doi.org/10.2118/124-G
+- Willhite, G. P. (1986). *Waterflooding* (SPE Textbook Series, Vol. 3). Society of Petroleum Engineers. https://doi.org/10.2118/9781555630058
 
 ## Licencia
 

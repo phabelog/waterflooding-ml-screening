@@ -40,13 +40,11 @@ THRESHOLDS = {
     # Espesor neto mínimo para que el volumen barrido justifique la inversión.
 
     "So_min": 0.45,
-    # El método de Dykstra-Parsons se formuló para saturaciones de petróleo
-    # del 45 % o mayores. El umbral se fija EN ese valor, no por debajo: un
-    # umbral menor (por ejemplo 0.40) sería más PERMISIVO, no más
-    # conservador, porque admitiría escenarios fuera del rango en que el
-    # método de barrido vertical fue validado. Mantenerlo en 0.45 asegura
-    # que todo caso etiquetado como apto haya sido evaluado dentro del
-    # dominio de validez de las correlaciones empleadas.
+    # Con la mayor saturación residual del dominio (Sor = 0.35), exigir
+    # So >= 0.45 asegura al menos 0.10 de saturación móvil de petróleo.
+    # Es una convención técnica de cribado: el operador del campo de
+    # referencia no aplica umbrales fijos (su criterio es económico), por
+    # lo que el valor se deja en este diccionario para poder modificarlo.
 
     "muo_max_cp": 50.0,
     # Por encima de este valor el frente es inestable y el caso corresponde

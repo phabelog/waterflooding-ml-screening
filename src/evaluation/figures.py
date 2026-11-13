@@ -79,7 +79,8 @@ def fig_train_val_test(resultados, outdir):
             for xi, vi in zip(x + (k - 1) * w, v):
                 ax.text(xi, vi + 0.004, f"{vi:.3f}", ha="center", va="bottom", fontsize=6.5, rotation=90)
         lo = min(resultados["modelos"][m][c][met] for m in modelos for c, *_ in conj)
-        ax.set_ylim(max(0, lo - 0.08), 1.045); ax.set_xticks(x, [CORTO[m] for m in modelos], fontsize=8)
+        ax.set_ylim(max(0, lo - 0.08), 1.045); ax.set_xticks(x, [CORTO[m].replace(" de ", " de\n").replace("Random ", "Random\n") for m in modelos], fontsize=8)
+        ax.set_yticks([t for t in ax.get_yticks() if t <= 1.0001])
         ax.set_title(tit, fontsize=10); ax.grid(axis="x", visible=False)
     h, l = axes[0].get_legend_handles_labels()
     fig.legend(h, l, frameon=False, ncol=3, loc="upper center", bbox_to_anchor=(0.5, 1.06), fontsize=8.5)

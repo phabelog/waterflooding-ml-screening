@@ -86,16 +86,16 @@ def iqr_outliers(df, columns=None, log_columns=None, k=1.5):
 
 def domain_report(df_new, df_reference, columns=None):
     """
-    Revisa un conjunto nuevo (por ejemplo, los datos de campo del Activo Auca)
+    Revisa un conjunto nuevo (por ejemplo, el caso de referencia o los
+    valores que ingresa el usuario en la aplicación)
     contra el dominio del conjunto de entrenamiento.
 
     Reporta, por variable:
-      - faltantes : valores ausentes ("N/D" en la plantilla de levantamiento)
+      - faltantes : valores ausentes
       - fuera_rango : valores fuera del mínimo-máximo del entrenamiento
 
     Política adoptada: los registros con variables faltantes NO se imputan.
-    Imputar introduciría supuestos del propio estudio en un conjunto cuyo
-    propósito es precisamente evaluar el modelo a ciegas. Los registros
+    Imputar introduciría supuestos del propio estudio en el caso evaluado. Los registros
     fuera de rango se conservan pero se señalan, porque en ellos el modelo
     extrapola y su predicción debe leerse con cautela.
     """

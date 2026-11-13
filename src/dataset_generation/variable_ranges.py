@@ -5,8 +5,9 @@ Corresponde al paso 1.2 del flujo de trabajo metodológico:
 "Definición de variables de entrada y sus rangos".
 
 Los rangos se orientan a reservorios de arenisca de la Cuenca Oriente
-(Activo Auca: Basal Tena, Napo "U", Napo "T" y Hollín). La validación con
-datos de campo se hará en una arena del Activo Auca (Bloque 61). Se
+(Activo Auca: Basal Tena, Napo "U", Napo "T" y Hollín). Los datos de
+campo no intervienen en la definición de los rangos: se usan solo como
+referencia para contrastar el dominio sintético (Etapa 5). Los rangos se
 mantienen deliberadamente más amplios que los valores promedio reportados
 para el campo, de modo que el dataset cubra también escenarios claramente
 no aptos y el modelo aprenda la frontera de decisión, no solo la zona

@@ -7,10 +7,11 @@ abstract: >-
   Welge, y eficiencias de barrido areal y vertical) acoplado a un modelo de
   clasificación supervisada para el cribado técnico de reservorios candidatos
   a proyectos de inyección de agua. El framework genera un conjunto de datos
-  sintéticos etiquetados que se emplea para entrenar el clasificador, cuya
-  capacidad de generalización se evalúa con datos de campo de una arena del
-  Activo Auca (Bloque 61, Ecuador), por patrón de inyección y mediante
-  contraste físico con la historia de inyección y producción.
+  sintéticos etiquetados que se emplea para entrenar y evaluar el
+  clasificador (conjunto de prueba independiente). Los datos de un campo
+  maduro de la Cuenca Oriente (Ecuador) se usan únicamente como referencia
+  anonimizada, no como validación de campo. Incluye una aplicación web en
+  Streamlit para aplicar el modelo.
 type: software
 authors:
   - given-names: "Phabell Andre"
@@ -18,6 +19,9 @@ authors:
     affiliation: "Escuela Superior Politécnica del Litoral (ESPOL)"
   - given-names: "Juan Joseph"
     family-names: "Martinez Alvarez"
+    affiliation: "Escuela Superior Politécnica del Litoral (ESPOL)"
+  - given-names: "Freddy Paul"
+    family-names: "Carrión Maldonado"
     affiliation: "Escuela Superior Politécnica del Litoral (ESPOL)"
 repository-code: "https://github.com/phabelog/waterflooding-ml-screening"
 license: MIT

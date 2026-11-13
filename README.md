@@ -4,6 +4,11 @@ Repositorio de código del artículo científico desarrollado como proyecto de
 titulación de la Maestría en Petróleos (ESPOL), en cooperación con EP
 Petroecuador (Gerencia de Activo Auca).
 
+**Alcance.** El modelo se entrena y se evalúa únicamente con datos
+sintéticos generados por el framework físico. Los datos de campo facilitados
+por EP Petroecuador se usan solo como referencia (contexto), de forma
+anonimizada; este trabajo no incluye una validación de campo.
+
 **Autores:** Phabell Andre Diaz Klinger, Juan Joseph Martinez Alvarez
 **Tutor:** Ing. Freddy Paul Carrión Maldonado, Ph.D.
 **Institución:** Escuela Superior Politécnica del Litoral (ESPOL)
@@ -19,12 +24,12 @@ de reservorios candidatos a proyectos de inyección de agua (*waterflooding*).
 
 | Etapa | Contenido | Estado |
 |---|---|---|
-| 1. Generación y recolección de datos | Framework físico, variables de entrada, escenarios sintéticos, etiquetado apto/no apto | Completada (levantamiento de datos de campo programado) |
+| 1. Generación de datos | Framework físico, variables de entrada, 5 000 escenarios sintéticos, etiquetado apto/no apto en dos niveles | Completada |
 | 2. Análisis de datos | Estadística descriptiva, correlación, balance de clases, consistencia física | Completada |
 | 3. Preprocesamiento | Atípicos y transformación logarítmica, división estratificada, escalado dentro del pipeline, ponderación de clases (sin SMOTE) | Completada |
 | 4. Desarrollo de modelos | Árbol de decisión (base), Random Forest, XGBoost, SVM, optimización de hiperparámetros | Completada |
-| 5. Evaluación y validación | Métricas, matriz de confusión, interpretabilidad, comparación con métodos tradicionales, validación con datos de campo (una arena del Activo Auca) | Pendiente |
-| 6. Interfaz gráfica | Aplicación en Streamlit: ingreso de parámetros y predicción con probabilidad asociada | Pendiente |
+| 5. Evaluación | Evaluación única en el conjunto de prueba, métricas (F1, precisión, recall, exactitud, AUC-ROC), importancia de variables y controles negativos, comparación con el cribado por rangos, caso de referencia | Completada |
+| 6. Interfaz gráfica | Aplicación en Streamlit: ingreso de las 16 propiedades, predicción, probabilidad y diagnóstico físico | Completada |
 
 ## Estructura del repositorio
 
@@ -35,16 +40,17 @@ de reservorios candidatos a proyectos de inyección de agua (*waterflooding*).
 │   ├── analysis/           # Análisis y auditoría del dataset (Etapa 2)
 │   ├── preprocessing/      # Limpieza, división, escalado, tratamiento del desbalance (Etapa 3)
 │   ├── models/             # Construcción y optimización de los cuatro modelos (Etapa 4)
-│   └── app/                # Aplicación Streamlit (Etapa 6)
+│   └── evaluation/         # Evaluación, importancia de variables, cribado por rangos, caso de referencia y figuras (Etapa 5)
+├── app/                    # Aplicación Streamlit (Etapa 6)
 ├── notebooks/              # Cuadernos ejecutables (Google Colab)
 │   ├── 01_framework_fisico.ipynb
 │   ├── 02_analisis_datos.ipynb
 │   ├── 03_preprocesamiento.ipynb
-│   └── 04_desarrollo_modelos.ipynb
+│   ├── 04_desarrollo_modelos.ipynb
+│   └── 05_evaluacion_validacion.ipynb
 ├── data/
-│   ├── synthetic/          # Dataset sintético generado (5 000 escenarios etiquetados)
-│   └── real_field_validation/  # Datos de campo para la validación; no se publican (ver sección "Datos")
-├── results/                # Mejores hiperparámetros y métricas de validación cruzada (Etapa 4)
+│   └── synthetic/          # Dataset sintético generado (5 000 escenarios etiquetados)
+├── results/                # Hiperparámetros y validación cruzada (Etapa 4); resultados de la evaluación (Etapa 5)
 ├── docs/                   # Figuras y documentación de la metodología
 └── tests/                  # Verificaciones automatizadas
 ```
@@ -94,15 +100,15 @@ python tests/test_dataset_generation.py   # eficiencias de barrido, etiquetado y
 python tests/test_data_analysis.py        # análisis y auditoría del dataset (Etapa 2)
 python tests/test_preprocessing.py        # preprocesamiento sin fuga de información (Etapa 3)
 python tests/test_models.py               # modelos, grillas y validación cruzada (Etapa 4)
+python tests/test_evaluation.py           # evaluación, cribado por rangos y caso de referencia (Etapa 5)
 ```
 
 Todos los conjuntos de verificaciones deben superarse en su totalidad.
 
 ## Cómo ejecutar
 
-Desarrollo recomendado en Google Colab, con los cuadernos de `notebooks/`
-sincronizados con este repositorio, para evitar requerimientos de cómputo
-local. Cada cuaderno descarga el repositorio y reproduce en línea las figuras
+Los cuadernos de `notebooks/` pueden ejecutarse en línea (por ejemplo, en
+Google Colab) o en un entorno local. Cada cuaderno descarga el repositorio y reproduce en línea las figuras
 y resultados de su etapa.
 
 Para regenerar el dataset sintético:
@@ -111,35 +117,68 @@ Para regenerar el dataset sintético:
 python src/dataset_generation/generate_dataset.py
 ```
 
+## Resultados (Etapa 5)
+
+Modelo final: **XGBoost**, seleccionado por su F1 medio en validación
+cruzada. Evaluación única sobre el conjunto de prueba (1 000 escenarios que
+ningún modelo vio durante el ajuste):
+
+| Modelo | F1 entrenamiento | F1 validación cruzada | F1 prueba | Exactitud prueba | AUC-ROC prueba |
+|---|---|---|---|---|---|
+| XGBoost (final) | 1.000 | 0.953 ± 0.008 | 0.944 | 0.956 | 0.993 |
+| Random Forest | 1.000 | 0.932 ± 0.011 | 0.919 | 0.936 | 0.984 |
+| Árbol de decisión (base) | 0.940 | 0.912 ± 0.014 | 0.895 | 0.917 | 0.961 |
+| SVM (RBF) | 0.909 | 0.839 ± 0.008 | 0.843 | 0.874 | 0.950 |
+| Cribado tradicional por rangos | — | — | 0.784 | 0.786 | — |
+| Clasificador trivial (todo apto) | — | — | 0.560 | 0.389 | 0.500 |
+
+- **Importancia por permutación:** viscosidad del petróleo, saturación actual
+  de petróleo, coeficiente de Dykstra-Parsons y permeabilidad. Los controles
+  negativos (porosidad y profundidad) obtienen importancia prácticamente nula.
+- **Frente al cribado por rangos:** los falsos positivos bajan de 214 a 29.
+- Todos los valores están en `results/etapa5_resultados.json` y las figuras
+  en `docs/figures/`.
+
+Las métricas miden la capacidad del clasificador para reproducir el criterio
+del framework físico; no son una validación frente a resultados de campo.
+
+## Aplicación web (Etapa 6)
+
+**Aplicación en línea:** https://waterflooding-ml-screening.streamlit.app
+
+Para ejecutarla en un equipo local:
+
+```bash
+pip install -r requirements.txt
+streamlit run app/streamlit_app.py
+```
+
+La aplicación entrena el modelo final al iniciar, a partir del dataset y de
+los hiperparámetros publicados (no usa archivos binarios). El usuario ingresa
+las 16 propiedades del reservorio y obtiene la clasificación, la probabilidad,
+una advertencia si algún valor queda fuera del dominio de entrenamiento y el
+diagnóstico físico (relación de movilidad, recobro y caudal de inyección
+frente a sus umbrales).
+
 ## Datos
 
-Los datos de campo se usan únicamente para validar el modelo (Etapa 5); no
-intervienen en el entrenamiento. Por recomendación de los ingenieros de EP
-Petroecuador (Gerencia de Activo Auca), la validación se limita a **un campo y
-una arena del Bloque 61** (candidata: U Inferior, en Auca Central o Auca Sur).
-Los autores levantan los datos en las oficinas del Activo Auca, bajo el
-acuerdo de confidencialidad suscrito. La validación tiene dos niveles:
+El entrenamiento y la evaluación usan **únicamente el dataset sintético**.
 
-1. **Validación por patrón de inyección (a ciegas).** Cada patrón (inyector y
-   productores asociados) es un caso con las 16 variables de entrada del
-   modelo. Su etiqueta de campo (apto / no apto) se asigna según la respuesta
-   observada a la inyección, con un criterio acordado con los ingenieros antes
-   de aplicar el modelo. Si no hay información por patrón, la unidad pasa a
-   ser el pozo productor.
-2. **Contraste físico de la arena.** El caudal de inyección, la irrupción del
-   agua, la relación agua-petróleo y el recobro calculados con el framework se
-   comparan con la historia real de inyección y producción.
+Los datos de campo facilitados por EP Petroecuador, bajo acuerdo de
+confidencialidad, corresponden a un campo maduro del Activo Auca y se emplean
+solo como **referencia**:
 
-La función `domain_report` (`src/preprocessing/preprocess.py`) revisa estos
-datos contra el dominio de entrenamiento: los faltantes no se imputan y los
-valores fuera de rango se señalan.
+1. **Contraste de rangos.** Los valores medidos (permeabilidad, porosidad,
+   espesor, gravedad API, profundidad, saturaciones extremas) se comparan con
+   los rangos del dataset sintético.
+2. **Caso de referencia.** Con las propiedades medidas fijas y las no medidas
+   sorteadas en su intervalo, se generan 2 000 realizaciones que se clasifican
+   con el criterio físico y con el modelo (coincidencia: 91.8 %). Es un
+   ejercicio de contexto, **no una validación de campo**.
 
-Los datos de campo **no se publican**: `.gitignore` bloquea por defecto los
-archivos de `data/real_field_validation/`. Solo podrían publicarse de forma
-anonimizada y con autorización expresa de la institución.
-
-Los resultados de las Etapas 2 a 4 se obtienen sobre el dataset sintético y
-no dependen de estos datos.
+Los valores de referencia se publican solo de forma agregada y anonimizada
+(`src/evaluation/evaluate.py`). Los archivos originales **no se publican**:
+`.gitignore` bloquea por defecto `data/real_field_validation/`.
 
 ## Citación y uso
 

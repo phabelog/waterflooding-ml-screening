@@ -149,7 +149,7 @@ def vertical_sweep_dykstra_parsons(Vdp, M, wor_limit=25.0, n_layers=50):
     menor permeabilidad). En cada etapa se calcula la posición del frente en
     las capas aún no irrumpidas, la cobertura vertical acumulada y el WOR
     producido. Se devuelve la cobertura correspondiente al momento en que el
-    WOR alcanza el límite económico.
+    WOR alcanza el corte adoptado.
 
     Parameters
     ----------
@@ -158,7 +158,8 @@ def vertical_sweep_dykstra_parsons(Vdp, M, wor_limit=25.0, n_layers=50):
     M : float
         Relación de movilidad de punto extremo.
     wor_limit : float
-        WOR económico límite (bbl agua / bbl petróleo). 25 corresponde
+        WOR de corte adoptado (bbl agua / bbl petróleo); umbral técnico,
+        no un límite económico calculado. 25 corresponde
         aproximadamente a 96 % de corte de agua.
     n_layers : int
         Número de capas del modelo estratificado.
@@ -229,7 +230,7 @@ def areal_sweep_after_breakthrough(M, qi_ratio):
 
     El barrido areal NO se detiene en la irrupción: el agua sigue ampliando
     el área contactada mientras se inyecta. Evaluar EA a la irrupción cuando
-    ED y EV se evalúan al límite económico mezclaría estados distintos del
+    ED y EV se evalúan al corte adoptado mezclaría estados distintos del
     mismo proceso y subestimaría el recobro.
 
     Parameters
@@ -258,7 +259,7 @@ def total_recovery_factor(ED, M, Vdp, qi_ratio=1.0,
         RF_total = ED * EA * EV
 
     Las tres se evalúan en el MISMO instante del proceso: el momento en que
-    el corte de agua producido alcanza el límite económico.
+    el corte de agua producido alcanza el corte adoptado.
 
       ED : Buckley-Leverett / Welge al corte de agua límite.
       EA : Craig, corregido después de la irrupción con la razón de

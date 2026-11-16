@@ -63,7 +63,7 @@ El módulo `src/physics/` implementa:
   frente de choque (dos métodos numéricos independientes para verificación
   cruzada), saturación promedio a la irrupción, curva de recobro frente a
   volúmenes porosos inyectados y eficiencia de desplazamiento al corte de
-  agua económico.
+  agua adoptado (WOR = 25).
 - **Darcy** — relación de movilidad de punto extremo e índice de
   inyectividad radial.
 - **Eficiencias de barrido** — barrido areal mediante la correlación de
@@ -102,6 +102,13 @@ python tests/test_models.py               # modelos, grillas y validación cruza
 python tests/test_evaluation.py           # evaluación, cribado por rangos y caso de referencia (Etapa 5)
 ```
 
+Para reproducir el análisis de sensibilidad del etiquetado (Sección 3.7 del
+artículo y Tablas S2 y S3 del material suplementario):
+
+```bash
+python src/evaluation/sensitivity.py      # genera results/sensibilidad_etiquetado.json (~1 min)
+```
+
 Todos los conjuntos de verificaciones deben superarse en su totalidad.
 
 ## Cómo ejecutar
@@ -137,6 +144,16 @@ ningún modelo vio durante el ajuste):
 - **Frente al cribado por rangos:** los falsos positivos bajan de 214 a 29.
 - Todos los valores están en `results/etapa5_resultados.json` y las figuras
   en `docs/figures/`.
+- **Sensibilidad del etiquetado:** variar el WOR de corte (10 o 50) o uno de
+  los ocho umbrales cambia hasta el 10.3 % de las etiquetas
+  (`results/sensibilidad_etiquetado.json`).
+
+## Material suplementario
+
+`docs/Material_suplementario.pdf` (y su versión editable `.docx`) contiene la
+Tabla S1, con las fuentes de la Cuenca Oriente que fundamentan cada rango del
+conjunto sintético y las reglas de dependencia entre variables, y las
+Tablas S2 y S3, con los análisis de sensibilidad completos.
 
 Las métricas miden la capacidad del clasificador para reproducir el criterio
 del framework físico; no son una validación frente a resultados de campo.

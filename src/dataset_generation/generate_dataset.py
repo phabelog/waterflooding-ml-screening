@@ -11,7 +11,7 @@ Flujo por escenario:
     2. Aplicación de las relaciones de consistencia física
        (viscosidad condicionada a API y temperatura, saturaciones válidas).
     3. Cálculo de las características derivadas con el framework físico:
-         - ED  : Buckley-Leverett + Welge, al corte de agua económico
+         - ED  : Buckley-Leverett + Welge, al corte de agua adoptado (WOR = 25)
          - M   : relación de movilidad de punto extremo (Darcy)
          - EA  : barrido areal (Craig / Willhite)
          - EV  : barrido vertical (Dykstra-Parsons)
@@ -105,7 +105,7 @@ def compute_physics(row, op=None):
     M = endpoint_mobility_ratio(
         row["krw_max"], row["muw_cp"], row["kro_max"], row["muo_cp"])
 
-    # Razón de volúmenes inyectados entre el límite económico y la irrupción:
+    # Razón de volúmenes inyectados entre el corte adoptado y la irrupción:
     # permite evaluar el barrido areal en el mismo instante que ED y EV.
     qi_ratio = disp["Qi_econ"] / disp["Qi_BT"] if disp["Qi_BT"] > 0 else 1.0
 

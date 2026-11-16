@@ -1,0 +1,174 @@
+{
+ "wor_de_corte": {
+  "WOR_10": {
+   "fw": 0.9091,
+   "RF_medio_pct": 14.2,
+   "RF_p50_pct": 12.5,
+   "aptos_pct": 29.4,
+   "etiquetas_que_cambian_pct": 9.5
+  },
+  "WOR_25": {
+   "fw": 0.9615,
+   "RF_medio_pct": 23.3,
+   "RF_p50_pct": 23.0,
+   "aptos_pct": 38.9,
+   "etiquetas_que_cambian_pct": 0.0
+  },
+  "WOR_50": {
+   "fw": 0.9804,
+   "RF_medio_pct": 29.2,
+   "RF_p50_pct": 29.3,
+   "aptos_pct": 41.5,
+   "etiquetas_que_cambian_pct": 2.5
+  }
+ },
+ "umbrales": {
+  "k_min_md": {
+   "base": 10.0,
+   "pruebas": [
+    {
+     "valor": 5.0,
+     "aptos_pct": 42.1,
+     "etiquetas_que_cambian_pct": 3.1
+    },
+    {
+     "valor": 20.0,
+     "aptos_pct": 34.5,
+     "etiquetas_que_cambian_pct": 4.4
+    }
+   ]
+  },
+  "h_net_min_ft": {
+   "base": 10.0,
+   "pruebas": [
+    {
+     "valor": 5.0,
+     "aptos_pct": 40.8,
+     "etiquetas_que_cambian_pct": 1.9
+    },
+    {
+     "valor": 20.0,
+     "aptos_pct": 33.6,
+     "etiquetas_que_cambian_pct": 5.3
+    }
+   ]
+  },
+  "So_min": {
+   "base": 0.45,
+   "pruebas": [
+    {
+     "valor": 0.4,
+     "aptos_pct": 41.8,
+     "etiquetas_que_cambian_pct": 2.9
+    },
+    {
+     "valor": 0.5,
+     "aptos_pct": 34.0,
+     "etiquetas_que_cambian_pct": 5.0
+    }
+   ]
+  },
+  "muo_max_cp": {
+   "base": 50.0,
+   "pruebas": [
+    {
+     "valor": 100.0,
+     "aptos_pct": 38.9,
+     "etiquetas_que_cambian_pct": 0.0
+    },
+    {
+     "valor": 30.0,
+     "aptos_pct": 38.9,
+     "etiquetas_que_cambian_pct": 0.0
+    }
+   ]
+  },
+  "M_max": {
+   "base": 10.0,
+   "pruebas": [
+    {
+     "valor": 15.0,
+     "aptos_pct": 43.0,
+     "etiquetas_que_cambian_pct": 4.1
+    },
+    {
+     "valor": 5.0,
+     "aptos_pct": 28.6,
+     "etiquetas_que_cambian_pct": 10.3
+    }
+   ]
+  },
+  "Vdp_max": {
+   "base": 0.8,
+   "pruebas": [
+    {
+     "valor": 0.9,
+     "aptos_pct": 44.0,
+     "etiquetas_que_cambian_pct": 5.1
+    },
+    {
+     "valor": 0.7,
+     "aptos_pct": 31.5,
+     "etiquetas_que_cambian_pct": 7.4
+    }
+   ]
+  },
+  "RF_total_min": {
+   "base": 0.15,
+   "pruebas": [
+    {
+     "valor": 0.1,
+     "aptos_pct": 41.3,
+     "etiquetas_que_cambian_pct": 2.4
+    },
+    {
+     "valor": 0.2,
+     "aptos_pct": 35.3,
+     "etiquetas_que_cambian_pct": 3.6
+    }
+   ]
+  },
+  "injectivity_min_bpd": {
+   "base": 150.0,
+   "pruebas": [
+    {
+     "valor": 100.0,
+     "aptos_pct": 39.3,
+     "etiquetas_que_cambian_pct": 0.4
+    },
+    {
+     "valor": 300.0,
+     "aptos_pct": 37.1,
+     "etiquetas_que_cambian_pct": 1.8
+    }
+   ]
+  }
+ },
+ "caso_de_referencia": {
+  "base (So,act = 1 - Swi)": {
+   "aptos_fisicos_pct": 60.2,
+   "M_p50": 7.0,
+   "RF_p50_pct": 29.8
+  },
+  "10 % del petróleo móvil ya producido": {
+   "aptos_fisicos_pct": 60.2,
+   "M_p50": 7.0,
+   "RF_p50_pct": 28.5
+  },
+  "20 % del petróleo móvil ya producido": {
+   "aptos_fisicos_pct": 59.8,
+   "M_p50": 7.0,
+   "RF_p50_pct": 26.2
+  },
+  "viscosidad del petróleo x 2.0": {
+   "aptos_fisicos_pct": 25.3,
+   "M_p50": 14.1,
+   "RF_p50_pct": 22.9
+  },
+  "viscosidad del petróleo x 0.5": {
+   "aptos_fisicos_pct": 80.4,
+   "M_p50": 3.5,
+   "RF_p50_pct": 35.0
+  }
+ }
+}

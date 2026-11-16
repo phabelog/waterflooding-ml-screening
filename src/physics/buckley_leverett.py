@@ -193,10 +193,11 @@ def welge_results(params, Swi, Sor, Sw_start=None):
 def displacement_at_economic_limit(params, Swi, Sor, fw_limit, Sw_start=None):
     """
     Estado del desplazamiento cuando el corte de agua producido alcanza el
-    límite económico fw_limit.
+    corte de agua adoptado fw_limit (umbral técnico de evaluación; el nombre
+    de la función conserva el término «economic» por compatibilidad).
 
     A diferencia de la versión anterior, devuelve además los volúmenes
-    porosos inyectados a la irrupción y al límite económico. Esa relación es
+    porosos inyectados a la irrupción y al corte adoptado. Esa relación es
     necesaria para evaluar el barrido areal en el MISMO instante que la
     eficiencia de desplazamiento, en lugar de mezclar estados distintos.
 
@@ -218,8 +219,8 @@ def displacement_at_economic_limit(params, Swi, Sor, fw_limit, Sw_start=None):
     res = welge_results(params, Swi, Sor, Sw_start=Sw_start)
     Sw_start = res["Sw_start"]
 
-    # Si la irrupción ocurre ya por encima del corte límite, el límite
-    # económico se alcanza en el instante mismo de la irrupción.
+    # Si la irrupción ocurre ya por encima del corte límite, el corte
+    # adoptado se alcanza en el instante mismo de la irrupción.
     if fw_limit <= res["fwf"]:
         return {"ED": float(np.clip(res["RF_BT"], 0.0, 1.0)),
                 "Qi_BT": float(res["Qi_BT"]), "Qi_econ": float(res["Qi_BT"]),

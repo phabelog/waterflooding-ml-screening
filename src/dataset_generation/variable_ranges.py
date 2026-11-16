@@ -103,8 +103,10 @@ def oil_viscosity_from_api(api, rng, scatter_log10=0.25):
     yacimiento en la Cuenca Oriente.
 
     Esto NO pretende ser una correlación PVT publicada: es una restricción
-    de consistencia interna del dataset sintético. Los valores reales se
-    contrastarán con los PVT de la arena seleccionada para la validación.
+    de consistencia interna del dataset sintético. Como el campo de
+    referencia no dispone de PVT de viscosidad en reservorio, en el caso de
+    referencia mu_o también se infiere con esta relación (Tabla 2 del
+    artículo).
     """
     api = np.asarray(api, dtype=float)
     log_med = 2.0 - 0.06 * api

@@ -105,7 +105,7 @@ def oil_viscosity_from_api(api, rng, scatter_log10=0.25):
     Esto NO pretende ser una correlación PVT publicada: es una restricción
     de consistencia interna del dataset sintético. Como el campo de
     referencia no dispone de PVT de viscosidad en reservorio, en el caso de
-    referencia mu_o también se infiere con esta relación (Tabla 2 del
+    referencia mu_o también se infiere con esta relación (Tabla 1 del
     artículo).
     """
     api = np.asarray(api, dtype=float)

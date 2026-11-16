@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 """
 Sensibilidad del etiquetado a sus supuestos (Sección 3.7 del artículo y
-Tabla S2 del material suplementario).
+Tablas C2 y C3 de docs/Informacion_complementaria).
 
 Recalcula el criterio físico sobre los 5 000 escenarios sintéticos variando
 UN supuesto a la vez y registra la fracción apta y el porcentaje de etiquetas
 que cambian respecto del caso base:
 
   1. WOR de corte: 10, 25 (base) y 50, con fw = WOR / (1 + WOR).
-  2. Cada uno de los ocho umbrales de la Tabla 3, en un valor más
+  2. Cada uno de los ocho umbrales de la Tabla 2 del artículo, en un valor más
      permisivo y uno más exigente.
   3. Caso de referencia (2 000 realizaciones): efecto de los supuestos de
      imputación (saturación actual de petróleo y viscosidad inferida).

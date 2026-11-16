@@ -103,7 +103,7 @@ python tests/test_evaluation.py           # evaluación, cribado por rangos y ca
 ```
 
 Para reproducir el análisis de sensibilidad del etiquetado (Sección 3.7 del
-artículo y Tablas S2 y S3 del material suplementario):
+artículo y Tablas C2 y C3 del documento de información complementaria):
 
 ```bash
 python src/evaluation/sensitivity.py      # genera results/sensibilidad_etiquetado.json (~1 min)
@@ -148,12 +148,12 @@ ningún modelo vio durante el ajuste):
   los ocho umbrales cambia hasta el 10.3 % de las etiquetas
   (`results/sensibilidad_etiquetado.json`).
 
-## Material suplementario
+## Información complementaria
 
-`docs/Material_suplementario.pdf` (y su versión editable `.docx`) contiene la
-Tabla S1, con las fuentes de la Cuenca Oriente que fundamentan cada rango del
+`docs/Informacion_complementaria.pdf` (y su versión editable `.docx`) amplía
+el artículo, que se lee de forma independiente. Contiene la Tabla C1, con las fuentes de la Cuenca Oriente que fundamentan cada rango del
 conjunto sintético y las reglas de dependencia entre variables, y las
-Tablas S2 y S3, con los análisis de sensibilidad completos.
+Tablas C2 y C3, con los análisis de sensibilidad completos.
 
 Las métricas miden la capacidad del clasificador para reproducir el criterio
 del framework físico; no son una validación frente a resultados de campo.

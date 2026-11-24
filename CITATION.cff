@@ -17,13 +17,13 @@ authors:
   - given-names: "Phabell Andre"
     family-names: "Diaz Klinger"
     affiliation: "Escuela Superior Politécnica del Litoral (ESPOL)"
+    orcid: "https://orcid.org/0009-0009-9635-5570"
   - given-names: "Juan Joseph"
     family-names: "Martinez Alvarez"
     affiliation: "Escuela Superior Politécnica del Litoral (ESPOL)"
-  - given-names: "Freddy Paul"
-    family-names: "Carrión Maldonado"
-    affiliation: "Escuela Superior Politécnica del Litoral (ESPOL)"
+    orcid: "https://orcid.org/0009-0002-2556-9597"
 repository-code: "https://github.com/phabelog/waterflooding-ml-screening"
+url: "https://waterflooding-ml-screening.streamlit.app"
 license: MIT
 keywords:
   - waterflooding
